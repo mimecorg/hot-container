@@ -1,0 +1,30 @@
+{
+  "name": "hot-container",
+  "version": "1.0.0",
+  "description": "Dependency injection container with hot-reloading for Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/index.js test/spec/**/*.spec.js",
+    "test:watch": "mocha --watch test/index.js test/spec/**/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mimecorg/hot-container.git"
+  },
+  "author": "Michał Męciński",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mimecorg/hot-container/issues"
+  },
+  "homepage": "https://github.com/mimecorg/hot-container",
+  "dependencies": {
+    "chokidar": "^3.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "mock-require": "^3.0.3",
+    "sinon": "^7.4.1",
+    "sinon-chai": "^3.3.0"
+  }
+}
