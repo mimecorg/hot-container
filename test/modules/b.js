@@ -7,4 +7,7 @@ function init( c ) {
   };
 }
 
-module.exports = { deps, init };
+function destroy() {
+}
+
+module.exports = { deps, init, destroy };

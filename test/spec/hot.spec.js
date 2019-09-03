@@ -81,6 +81,40 @@ describe( 'container - hot reloading', () => {
     expect( result.c ).to.equal( b.c );
   } );
 
+  it( 'destroys a modified module', () => {
+    sinon.spy( chokidar.FSWatcher.prototype, 'on' );
+
+    const b = require( '../modules/b' );
+    sinon.spy( b, 'destroy' );
+
+    const container = hotContainer( { root, dir: 'modules', watch: true } );
+    container.get( 'b' );
+
+    expect( chokidar.FSWatcher.prototype.on.firstCall ).to.have.been.calledWith( 'change', sinon.match( callback => {
+      callback();
+      return true;
+    } ) );
+
+    expect( b.destroy ).to.have.been.called;
+  } );
+
+  it( 'destroys a module with modified dependency', () => {
+    sinon.spy( chokidar.FSWatcher.prototype, 'on' );
+
+    const b = require( '../modules/b' );
+    sinon.spy( b, 'destroy' );
+
+    const container = hotContainer( { root, dir: 'modules', watch: true } );
+    container.get( 'b' );
+
+    expect( chokidar.FSWatcher.prototype.on.thirdCall ).to.have.been.calledWith( 'change', sinon.match( callback => {
+      callback();
+      return true;
+    } ) );
+
+    expect( b.destroy ).to.have.been.called;
+  } );
+
   it( 'stops watching a module', () => {
     sinon.spy( chokidar.FSWatcher.prototype, 'close' );
 

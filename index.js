@@ -86,6 +86,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       watcher: null,
       deps: null,
       init: null,
+      destroy: null,
       result: null
     };
 
@@ -131,6 +132,8 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       record.state = State.Loaded;
       record.deps = result.deps;
       record.init = result.init;
+      if ( result.destroy != null )
+        record.destroy = result.destroy;
     } else {
       record.state = State.Initialized;
       record.result = result;
@@ -158,12 +161,16 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     if ( verbose )
       console.log( 'unloading module: ' + name );
 
+    if ( record.state == State.Initialized && record.destroy != null )
+      record.destroy();
+
     delete require.cache[ record.path ];
 
     record.state = State.Found;
     record.error = false;
     record.deps = null;
     record.init = null;
+    record.destroy = null;
     record.result = null;
 
     invalidate( name );
@@ -176,6 +183,9 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       if ( ( record.state == State.Initialized || record.state == State.Loaded && record.error ) && record.deps != null && record.deps.includes( dep ) ) {
         if ( verbose )
           console.log( 'invalidating module: ' + name );
+
+        if ( record.state == State.Initialized && record.destroy != null )
+          record.destroy();
 
         record.state = State.Loaded;
         record.error = false;
