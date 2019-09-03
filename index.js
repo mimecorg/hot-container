@@ -19,14 +19,14 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
   if ( root == null )
     root = path.dirname( require.main.filename );
 
-  function register( name, value ) {
-    if ( map[ value ] != null )
+  function register( name, instance ) {
+    if ( map[ instance ] != null )
       throw new Error( 'Module is already registered: ' + name );
 
     const record = add( name );
 
     record.state = State.Initialized;
-    record.result = value;
+    record.instance = instance;
   }
 
   function get( name ) {
@@ -34,7 +34,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
 
     if ( record != null ) {
       if ( record.state == State.Initialized )
-        return record.result;
+        return record.instance;
 
       if ( record.error && record.state != State.None )
         return null;
@@ -55,7 +55,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       if ( record.state == State.Loaded )
         initialize( name, record );
 
-      return record.result;
+      return record.instance;
     } catch ( err ) {
       record.error = true;
 
@@ -87,7 +87,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       deps: null,
       init: null,
       destroy: null,
-      result: null
+      instance: null
     };
 
     map[ name ] = record;
@@ -136,7 +136,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
         record.destroy = result.destroy;
     } else {
       record.state = State.Initialized;
-      record.result = result;
+      record.instance = result;
     }
   }
 
@@ -153,7 +153,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       return arg;
     } );
 
-    record.result = record.init.apply( null, args );
+    record.instance = record.init.apply( null, args );
     record.state = State.Initialized;
   }
 
@@ -171,7 +171,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     record.deps = null;
     record.init = null;
     record.destroy = null;
-    record.result = null;
+    record.instance = null;
 
     invalidate( name );
   }
@@ -189,7 +189,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
 
         record.state = State.Loaded;
         record.error = false;
-        record.result = null;
+        record.instance = null;
 
         invalidate( name );
       }
