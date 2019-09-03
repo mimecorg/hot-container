@@ -41,7 +41,7 @@ const container = hotContainer( {
 Options:
 
 - `root` - the path of the root directory; the default value is the directory containing the current entry script
-- `dir` - the directory, relative to `root`, containing modules which can be loaded by the containers; the default value is `'.'`
+- `dir` - the directory, relative to `root`, containing modules which are loaded by the container; the default value is `'.'`
 - `aliases` - an object which defines file and directory aliases (see the [aliases](#aliases) section below)
 - `watch` - when enabled, modified modules are automatically reloaded; the default value is `true`
 - `verbose` - when enabled, debugging information is printed to the console; the default value is `false`
@@ -72,7 +72,7 @@ module.exports = function() { ... };
 
 ### Retrieving a module instance
 
-The **`get( name )`** method can be used to get the instance of the specified module:
+Use the **`get( name )`** method to get the instance of the specified module:
 
 ```js
 const handler = container.get( 'handler' );
@@ -142,7 +142,7 @@ Note that a module is destroyed immediately when a modification is detected, but
 
 ### Stopping the container
 
-Use the `stop()` method to stop watching modified files:
+Use the **`stop()`** method to stop watching modified files:
 
 ```js
 container.stop();
@@ -152,13 +152,15 @@ Note that the application will keep running as long as the container is watching
 
 ### Aliases
 
-You can define aliases to access files or directories outside of the default `dir` directory. For example:
+When passing options to the container, you can define aliases to access files or directories outside of the default `dir` directory. For example:
 
 ```js
+const container = hotContainer( {
   aliases: {
     config: 'data/config.json',
     utils: 'utils'
   }
+} );
 ```
 
 In this case, when `'config'` is used as the module name, the container will load the `data/config.json` file. When the module name is prefixed with `'utils/'`, for example `'utils/log'`, it will load files from the `'utils'` directory.
