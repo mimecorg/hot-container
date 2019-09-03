@@ -85,4 +85,20 @@ describe( 'container - error handling', () => {
       return true;
     } ) );
   } );
+
+  it( 'init has wrong number of arguments', () => {
+    const container = hotContainer( { root, dir: 'modules', watch: false } );
+
+    const handler = sinon.stub();
+    container.on( 'error', handler );
+
+    const result = container.get( 'errors/args' );
+
+    expect( result ).to.be.null;
+    expect( handler ).to.have.been.calledWith( sinon.match( err => {
+      expect( err ).to.be.an( 'error' );
+      expect( err.message ).to.equal( 'Wrong number of init arguments in module: errors/args' );
+      return true;
+    } ) );
+  } );
 } );

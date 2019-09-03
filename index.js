@@ -129,6 +129,14 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     const result = require( record.path );
 
     if ( typeof result == 'object' && result.deps != null && result.init != null ) {
+      if ( !( result.deps instanceof Array ) )
+        throw new TypeError( 'Invalid type of deps export in module: ' + name );
+      if ( typeof result.init != 'function' )
+        throw new TypeError( 'Invalid type of init export in module: ' + name );
+      if ( result.destroy != null && typeof result.destroy != 'function' )
+        throw new TypeError( 'Invalid type of destroy export in module: ' + name );
+      if ( result.deps.length != result.init.length )
+        throw new TypeError( 'Wrong number of init arguments in module: ' + name );
       record.state = State.Loaded;
       record.deps = result.deps;
       record.init = result.init;
