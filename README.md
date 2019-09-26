@@ -84,6 +84,17 @@ If the module or one of its dependencies cannot be loaded or initialized, `null`
 
 Note that modules are only loaded and initialized when they are needed, i.e. when `get()` is called. For hot-reloading to work, make sure that `get()` is called on every request or event processed by the application, in order to get an up-to-date instance of the module.
 
+Use the **`exists( name )`** method to check if a module exists without actually loading it:
+
+```js
+if ( container.exists( 'handler' ) {
+  const handler = container.get( 'handler' );
+  // ...
+}
+```
+
+In this case `get()` can still return `null` in case of an error.
+
 ### Programmatic registration
 
 Use the **`register( name, instance )`** method to add an object or function directly to the container:
@@ -149,6 +160,32 @@ container.stop();
 ```
 
 Note that the application will keep running as long as the container is watching files.
+
+### Module metadata
+
+A dynamic module can optionally export additional properties which describe the module:
+
+```js
+const description = 'This is my module.';
+
+const deps = [ 'one', 'two' ];
+
+function init( one, two ) {
+  return ...;
+}
+
+module.exports = { description, deps, init };
+```
+
+Use the **`meta( name )`** function to get these metadata:
+
+```js
+const handler = container.get( 'handler' );
+const meta = container.meta( 'hanler' );
+console.log( meta.description ); // prints 'This is my module.'
+```
+
+Note that `meta()` will return `null` is the module wasn't initialized, so you must call `get()` first.
 
 ### Aliases
 
