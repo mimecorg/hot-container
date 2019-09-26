@@ -118,4 +118,15 @@ describe( 'container - basic operations', () => {
 
     expect( exists ).to.be.false;
   } );
+
+  it( 'returns module metadata', () => {
+    const container = hotContainer( { root, dir: 'modules', watch: false } );
+
+    container.get( 'meta' );
+    const meta = container.meta( 'meta' );
+
+    expect( meta ).to.be.an( 'object' );
+    expect( meta.c1 ).to.equal( 'foo' );
+    expect( meta.c2 ).to.equal( 5 );
+  } );
 } );

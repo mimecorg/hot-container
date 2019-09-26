@@ -78,6 +78,14 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     }
   }
 
+  function meta( name ) {
+    const record = map[ name ];
+    if ( record != null && record.state == State.Initialized )
+      return record.meta;
+    else
+      return null;
+  }
+
   function add( name ) {
     const record = {
       state: State.None,
@@ -87,7 +95,8 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
       deps: null,
       init: null,
       destroy: null,
-      instance: null
+      instance: null,
+      meta: null
     };
 
     map[ name ] = record;
@@ -129,19 +138,21 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     const result = require( record.path );
 
     if ( typeof result == 'object' && result.deps != null && result.init != null ) {
-      if ( !( result.deps instanceof Array ) )
+      const { deps, init, destroy, ...meta } = result;
+      if ( !( deps instanceof Array ) )
         throw new TypeError( 'Invalid type of deps export in module: ' + name );
-      if ( typeof result.init != 'function' )
+      if ( typeof init != 'function' )
         throw new TypeError( 'Invalid type of init export in module: ' + name );
-      if ( result.destroy != null && typeof result.destroy != 'function' )
+      if ( destroy != null && typeof destroy != 'function' )
         throw new TypeError( 'Invalid type of destroy export in module: ' + name );
-      if ( result.deps.length != result.init.length )
+      if ( deps.length != init.length )
         throw new TypeError( 'Wrong number of init arguments in module: ' + name );
       record.state = State.Loaded;
-      record.deps = result.deps;
-      record.init = result.init;
-      if ( result.destroy != null )
-        record.destroy = result.destroy;
+      record.deps = deps;
+      record.init = init;
+      if ( destroy != null )
+        record.destroy = destroy;
+      record.meta = meta;
     } else {
       record.state = State.Initialized;
       record.instance = result;
@@ -180,6 +191,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     record.init = null;
     record.destroy = null;
     record.instance = null;
+    record.meta = null;
 
     invalidate( name );
   }
@@ -223,6 +235,7 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     register,
     get,
     exists,
+    meta,
     on,
     stop
   };
