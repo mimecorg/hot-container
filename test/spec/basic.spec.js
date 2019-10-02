@@ -1,6 +1,7 @@
 const path = require( 'path' );
 
 const expect = require( 'chai' ).expect;
+const sinon = require( 'sinon' );
 
 const hotContainer = require( 'hot-container' );
 
@@ -128,5 +129,27 @@ describe( 'container - basic operations', () => {
     expect( meta ).to.be.an( 'object' );
     expect( meta.c1 ).to.equal( 'foo' );
     expect( meta.c2 ).to.equal( 5 );
+  } );
+
+  it( 'destroys a module', () => {
+    const b = require( '../modules/b' );
+    sinon.spy( b, 'destroy' );
+
+    const container = hotContainer( { root, dir: 'modules', watch: true } );
+    container.get( 'b' );
+
+    container.destroy();
+
+    expect( b.destroy ).to.have.been.called;
+  } );
+
+  it( 'creates a new module after destroying it', () => {
+    const container = hotContainer( { root, dir: 'modules', watch: true } );
+    const b1 = container.get( 'b' );
+    container.destroy();
+    const b2 = container.get( 'b' );
+
+    expect( b2 ).to.be.an( 'object' );
+    expect( b2 ).to.not.equal( b1 );
   } );
 } );

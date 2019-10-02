@@ -151,6 +151,12 @@ This function is called when the module or one of its dependencies are modified.
 
 Note that a module is destroyed immediately when a modification is detected, but it's not initialized again until it's needed.
 
+Use the **`destroy()`** method of the container to destroy all modules:
+
+```js
+container.destroy();
+```
+
 ### Stopping the container
 
 Use the **`stop()`** method to stop watching modified files:

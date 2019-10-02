@@ -231,13 +231,25 @@ function hotContainer( { root, dir = '.', aliases, watch = true, verbose = false
     }
   }
 
+  function destroy() {
+    for ( const name in map ) {
+      const record = map[ name ];
+      if ( record.state == State.Initialized && record.destroy != null ) {
+        record.destroy();
+        record.state = State.Loaded;
+        record.instance = null;
+      }
+    }
+  }
+
   return {
     register,
     get,
     exists,
     meta,
     on,
-    stop
+    stop,
+    destroy
   };
 }
 
